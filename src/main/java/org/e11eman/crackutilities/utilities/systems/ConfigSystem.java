@@ -1,10 +1,26 @@
 package org.e11eman.crackutilities.utilities.systems;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import net.fabricmc.loader.api.FabricLoader;
+import org.e11eman.crackutilities.utilities.CClient;
+import org.e11eman.crackutilities.utilities.MessagePresets;
+import org.e11eman.crackutilities.wrappers.Player;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class ConfigSystem {
     public final File configPath;
     private final Gson gson = new Gson();
 
-    private final Path modConfigPath = FabricLoader.getInstance().getConfigDir();
+    private final Path modConfigPath = Path.of(FabricLoader.getInstance().getConfigDir() + "/CrackUtilities/");
+    private final File configFile = new File(modConfigPath.toFile() + "/cc.json");
 
     private JsonObject config;
 
@@ -16,11 +32,9 @@ public class ConfigSystem {
 
     @SuppressWarnings({"ResultOfMethodCallIgnored"})
     private void createBrokenConfig() {
-        File brokenConfig = new File(modConfigPath + "DirectoryOmitted");
-
         try {
-            brokenConfig.createNewFile();
-            FileWriter fileWriter = new FileWriter(brokenConfig);
+            configFile.createNewFile();
+            FileWriter fileWriter = new FileWriter(configFile);
             fileWriter.write(getConfig().toString());
             fileWriter.close();
         } catch (IOException e) {
@@ -31,18 +45,22 @@ public class ConfigSystem {
     @SuppressWarnings({"ResultOfMethodCallIgnored"})
     public void fixConfig() {
         try {
-            if (configPath.exists()) {
-                createBrokenConfig();
+            Player.alertClient(MessagePresets.errorTextPreset("config needs to be fixed awwww :("));
+            if (!configFile.exists()) {
+                try {
+                    configPath.mkdirs();
+                    configFile.createNewFile();
+                } catch (IOException ignored) {
+                    throw new RuntimeException(ignored);
+                }
             }
-
-            Files.createDirectories(Paths.get(modConfigPath + "DirectoryOmitted"));
-            FileWriter fixConfig = new FileWriter(configPath);
-
-            configPath.delete();
-            configPath.createNewFile();
+            FileWriter fixConfig = new FileWriter(configFile);
 
             fixConfig.write(jsonConfigDefault);
             fixConfig.close();
+
+            Reader reader = Files.newBufferedReader(configFile.toPath());
+            this.config = gson.fromJson(reader, JsonObject.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -50,28 +68,24 @@ public class ConfigSystem {
 
     public void updateConfig() {
         try {
-            Reader reader = Files.newBufferedReader(configPath.toPath());
+            Reader reader = Files.newBufferedReader(configFile.toPath());
             this.config = gson.fromJson(reader, JsonObject.class);
             reader.close();
         } catch (IOException e) {
             fixConfig();
-
             updateConfig();
         }
     }
 
     public JsonObject getConfig() {
-        if (configPath.exists()) {
-            try {
-                return config;
-            } catch (Exception e) {
-                fixConfig();
-
-                return getConfig();
-            }
-        } else {
+        if (!configPath.exists() || config == null) {
             fixConfig();
-
+            return getConfig();
+        }
+        try {
+            return config;
+        } catch (Exception e) {
+            fixConfig();
             return getConfig();
         }
     }
@@ -81,7 +95,6 @@ public class ConfigSystem {
             return config.getAsJsonObject(categoryName);
         } catch (Exception e) {
             fixConfig();
-
             return config.getAsJsonObject(categoryName);
         }
     }

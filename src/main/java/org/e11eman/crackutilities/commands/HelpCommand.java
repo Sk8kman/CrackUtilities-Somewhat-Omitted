@@ -1,5 +1,16 @@
 package org.e11eman.crackutilities.commands;
 
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import org.e11eman.crackutilities.utilities.CClient;
+import org.e11eman.crackutilities.utilities.MessagePresets;
+import org.e11eman.crackutilities.utilities.toolclasses.Command;
+import org.e11eman.crackutilities.wrappers.Player;
+
+import java.util.ArrayList;
+
 public class HelpCommand extends Command {
     public HelpCommand() {
         super("help", "Get a list of all client commands", "help");

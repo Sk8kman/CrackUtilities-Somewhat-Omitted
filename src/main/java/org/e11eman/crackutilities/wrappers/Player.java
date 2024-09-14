@@ -1,4 +1,31 @@
 package org.e11eman.crackutilities.wrappers;
+
+import com.mojang.brigadier.CommandDispatcher;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.MessageScreen;
+import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.gui.screen.multiplayer.ConnectScreen;
+import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
+import net.minecraft.client.network.*;
+import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
+import net.minecraft.command.CommandSource;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.listener.PacketListener;
+import net.minecraft.network.message.LastSeenMessagesCollector;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
+
+import java.util.*;
+
 @SuppressWarnings("unused")
 public class Player {
     private static final LastSeenMessagesCollector lastSeenMessagesCollector = new LastSeenMessagesCollector(120);
@@ -49,11 +76,7 @@ public class Player {
 
     public static void setUsername(String username) {
         MinecraftClient client = MinecraftClient.getInstance();
-
-        Session newSession = new Session(username, "", "", Optional.empty(), Optional.empty(), Session.AccountType.MOJANG);
-
-        client.getSessionProperties().clear();
-        ((ClientAccessor) client).setSession(newSession);
+        //TODO: implement changing session profile name
     }
 
     public static void sendChat(String message) {
@@ -150,7 +173,8 @@ public class Player {
     }
 
     public static void connectPlayer(String addr, ServerInfo info) {
-        ConnectScreen.connect(new MultiplayerScreen(new TitleScreen()), MinecraftClient.getInstance(), ServerAddress.parse(addr), info, false);
+        Map<Identifier, byte[]> cookie = Map.of();
+        ConnectScreen.connect(new MultiplayerScreen(new TitleScreen()), MinecraftClient.getInstance(), ServerAddress.parse(addr), info, false, new CookieStorage(cookie));
     }
 
     public static void reconnectPlayer() {
@@ -166,21 +190,21 @@ public class Player {
     public static void disconnectPlayer() {
         MinecraftClient client = MinecraftClient.getInstance();
 
-        boolean bl = client.isInSingleplayer();
-        boolean bl2 = client.isConnectedToRealms();
+        boolean inSingleplayer = client.isInSingleplayer();
+        boolean inRealms = client.getCurrentServerEntry() != null && client.getCurrentServerEntry().isRealm();
         assert client.world != null;
         client.world.disconnect();
 
-        if (bl) {
-            client.disconnect(new MessageScreen(Text.literal("Disconnection")));
+        if (inSingleplayer) {
+            client.disconnect(new MessageScreen(Text.literal("Disconnected\nReason: Disconnected by CrackUtilities")));
         } else {
             client.disconnect();
         }
 
         TitleScreen titleScreen = new TitleScreen();
-        if (bl) {
+        if (inSingleplayer) {
             client.setScreen(titleScreen);
-        } else if (bl2) {
+        } else if (inRealms) {
             client.setScreen(new RealmsMainScreen(titleScreen));
         } else {
             client.setScreen(new MultiplayerScreen(titleScreen));

@@ -2,12 +2,16 @@
   "required": true,
   "minVersion": "0.8",
   "package": "org.e11eman.crackutilities.mixins",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "World"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "client": [
+    "ChatScreen",
+    "ClientPlayerEntity",
+    "ClientPlayNetworkHandler"
   ]
 }

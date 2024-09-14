@@ -1,5 +1,13 @@
 package org.e11eman.crackutilities.keybinds;
 
+import net.minecraft.util.Hand;
+import org.e11eman.crackutilities.utilities.CClient;
+import org.e11eman.crackutilities.utilities.MessagePresets;
+import org.e11eman.crackutilities.utilities.toolclasses.Keybind;
+import org.e11eman.crackutilities.wrappers.Player;
+
+import java.security.SecureRandom;
+
 public class RandomRightClickKeybind extends Keybind {
     public boolean enabled = false;
     public SecureRandom secureRandom = new SecureRandom();

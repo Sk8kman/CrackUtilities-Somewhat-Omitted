@@ -1,4 +1,12 @@
 package org.e11eman.crackutilities.utilities.systems;
+
+import com.google.gson.JsonObject;
+import org.e11eman.crackutilities.utilities.CClient;
+import org.e11eman.crackutilities.wrappers.Player;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class SelfCareSystem {
     private Timer careLoop = new Timer();
 
@@ -12,7 +20,7 @@ public class SelfCareSystem {
                 public void run() {
                     if(category.get("checkCreative").getAsBoolean()) {
                         if(!Player.getPlayer().isCreative()) {
-                            Player.sendChat("/minecraft:gamemode creative " + Player.getUsername());
+                            Player.sendChat("/minecraft:gamemode creative @s[type=player]");
                         }
                     }
 
@@ -25,7 +33,7 @@ public class SelfCareSystem {
             }, 0, (long) category.get("delay").getAsDouble());
         });
 
-        CClient.events.register("closeWorld", "selfCareCloseWorld",  (Event) -> {
+        CClient.events.register("closeWorld", "selfCareCloseWorld", (Event) -> {
             careLoop.purge();
             careLoop.cancel();
 

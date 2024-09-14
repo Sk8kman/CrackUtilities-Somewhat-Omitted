@@ -1,6 +1,19 @@
-package org.e11eman.crackutilities.utilities.systems
+package org.e11eman.crackutilities.utilities.systems; // u forgor a semicolon here too BRUH
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import org.e11eman.crackutilities.utilities.CClient;
+import org.e11eman.crackutilities.wrappers.Player;
+
+import java.net.Socket;
+import java.net.URI;
+
 @SuppressWarnings("unused")
 public class IrcSystem {
+    //kinda sus, commenting out
+    /*
     private final Gson GSON = new Gson();
     private final JsonObject CONFIG = CClient.configSystem.getConfig();
     private final JsonObject CATEGORY = CClient.configSystem.getCategory(CONFIG, "ircSystem");
@@ -65,6 +78,6 @@ public class IrcSystem {
                     );
         });
     }
-
+     */
 
 }

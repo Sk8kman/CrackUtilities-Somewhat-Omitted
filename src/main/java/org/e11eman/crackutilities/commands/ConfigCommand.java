@@ -1,5 +1,21 @@
 package org.e11eman.crackutilities.commands;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import org.e11eman.crackutilities.utilities.CClient;
+import org.e11eman.crackutilities.utilities.MessagePresets;
+import org.e11eman.crackutilities.utilities.toolclasses.Command;
+import org.e11eman.crackutilities.wrappers.Player;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
+
 public class ConfigCommand extends Command {
     public ConfigCommand() {
         super("config", "Manage clients config", "\n config <list> <path/to/category> \n config <reload> \n config <setPath> <path/to/value> <type> <value> \n config <save>");
@@ -10,7 +26,6 @@ public class ConfigCommand extends Command {
         switch (arguments.get(0)) {
             case "reload" -> {
                 CClient.configSystem.updateConfig();
-
                 Player.alertClient(MessagePresets.normalTextPreset("Successfully reloaded config!"));
             }
 
@@ -97,7 +112,6 @@ public class ConfigCommand extends Command {
             }
 
             case "save" -> {
-
                 try {
                     FileWriter writer = new FileWriter(CClient.configSystem.configPath);
                     writer.write(CClient.configSystem.getConfig().toString());
@@ -106,6 +120,7 @@ public class ConfigCommand extends Command {
                     Player.alertClient(MessagePresets.normalTextPreset("Successfully saved config to file!"));
                 } catch (IOException e) {
                     CClient.configSystem.fixConfig();
+                    Player.alertClient(MessagePresets.errorTextPreset("Failed to save config :("));
                 }
             }
         }

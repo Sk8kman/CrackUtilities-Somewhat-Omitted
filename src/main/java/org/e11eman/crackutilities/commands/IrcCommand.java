@@ -1,5 +1,13 @@
 package org.e11eman.crackutilities.commands;
 
+import org.e11eman.crackutilities.utilities.ArrayTools;
+import org.e11eman.crackutilities.utilities.CClient;
+import org.e11eman.crackutilities.utilities.packets.C2WSIrcMessagePacket;
+import org.e11eman.crackutilities.utilities.toolclasses.Command;
+import org.e11eman.crackutilities.wrappers.Player;
+
+import java.util.ArrayList;
+
 public class IrcCommand extends Command {
     public IrcCommand() {
         super("irc", "Communicate with the main IRC server", "\n irc <connect> \n irc <disconnect> \n irc <chat> <message> ");
@@ -7,6 +15,8 @@ public class IrcCommand extends Command {
 
     @Override
     public void execute(ArrayList<String> arguments) {
+        //Don't have the code required to make this work :(
+        /*
         switch (arguments.get(0)) {
             case "connect" -> CClient.ircSystem.socket.connect();
 
@@ -19,5 +29,6 @@ public class IrcCommand extends Command {
                     ArrayTools.join(ArrayTools.shift(arguments, 1), ' ')
             ).getPacket());
         }
+         */
     }
 }

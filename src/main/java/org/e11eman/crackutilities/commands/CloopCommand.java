@@ -1,5 +1,13 @@
 package org.e11eman.crackutilities.commands;
 
+import org.e11eman.crackutilities.utilities.ArrayTools;
+import org.e11eman.crackutilities.utilities.CClient;
+import org.e11eman.crackutilities.utilities.MessagePresets;
+import org.e11eman.crackutilities.utilities.toolclasses.Command;
+import org.e11eman.crackutilities.wrappers.Player;
+
+import java.util.ArrayList;
+
 public class CloopCommand extends Command {
 
     public CloopCommand() {

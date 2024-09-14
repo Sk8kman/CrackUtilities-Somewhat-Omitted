@@ -35,5 +35,10 @@
     "spin": {
       "increment": 1
     }
-  }
+  },
+  "servers": [
+    "kaboom.pw",
+    "chipmunk.land"
+  ]
+
 }

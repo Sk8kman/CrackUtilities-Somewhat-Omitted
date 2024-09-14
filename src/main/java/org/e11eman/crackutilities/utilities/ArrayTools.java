@@ -1,4 +1,9 @@
 package org.e11eman.crackutilities.utilities;
+
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Collection;
+
 @SuppressWarnings("unused")
 public class ArrayTools {
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();

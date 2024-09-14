@@ -1,4 +1,8 @@
 package org.e11eman.crackutilities.utilities.toolclasses;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
 public abstract class Command {
     public String name;
     public String description;

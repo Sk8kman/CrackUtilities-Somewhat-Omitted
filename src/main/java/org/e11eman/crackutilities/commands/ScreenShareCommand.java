@@ -1,11 +1,29 @@
 package org.e11eman.crackutilities.commands;
 
+import net.minecraft.text.Text;
+import net.minecraft.util.math.Vec3d;
+import org.e11eman.crackutilities.utilities.CClient;
+import org.e11eman.crackutilities.utilities.ImageUtilities;
+import org.e11eman.crackutilities.utilities.MessagePresets;
+import org.e11eman.crackutilities.utilities.rendering.ChatScreen;
+import org.e11eman.crackutilities.utilities.rendering.Screen;
+import org.e11eman.crackutilities.utilities.rendering.TextScreen;
+import org.e11eman.crackutilities.utilities.toolclasses.Command;
+import org.e11eman.crackutilities.wrappers.Player;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class ScreenShareCommand extends Command {
     public int fps = 10;
     public int width = 35;
     public int height = 18;
     public ChatScreen chatScreen = new ChatScreen(width, height, null);
-    public String type = "chat";
+    public String type = "screen";
     public boolean enabled = false;
     public Timer loop = new Timer();
     public Robot robot;
@@ -22,7 +40,7 @@ public class ScreenShareCommand extends Command {
     }
 
     public ScreenShareCommand() {
-        super("screenshare", "Draw your screen to minecraft via chat or text displays", "\nscreenshare <set> <chat/screen>\nscreenshare <setDimensions> <width> <height>\nscreenshare <start/stop>\nscreenshare <setFps> <fps>\nscreenshare <fixScreen>\nscreenshare <setSelector> <selector>\nscreenshare <compactMode>");
+        super("screenshare", "Draw your screen to minecraft via chat or text displays", "\nscreenshare <set> <chat/screen>\nscreenshare <setDimensions> <width> <height>\nscreenshare <start/stop>\nscreenshare <setFps> <fps>\nscreenshare <fixScreen>\nscreenshare <setSelector> <selector>\nscreenshare <compactMode>\nscreenshare <setcharacter> <character>");
 
         CClient.events.register("closeWorld", "ssClose", (Event) -> {
             loop.purge();
@@ -32,41 +50,51 @@ public class ScreenShareCommand extends Command {
 
             enabled = false;
 
-            if(Objects.equals(type, "screen")) {
-                for(String i : textScreen.tags) {
-                    CClient.commandCoreSystem.run("kill @e[tag=" + i + "]");
-                }
+            if (Objects.equals(type, "screen")) {
+                textScreen.cleanup();
             }
         });
     }
 
     @Override
     public void execute(ArrayList<String> arguments) {
-        switch (arguments.get(0)) {
+        switch (arguments.get(0).toLowerCase()) {
             case "set" -> {
-                switch (arguments.get(1)) {
+                switch (arguments.get(1).toLowerCase()) {
                     case "chat" -> {
                         type = "chat";
-
+                        if (textScreen != null) {
+                            textScreen.cleanup();
+                        }
                         Player.alertClient(MessagePresets.trueTextPreset("Successfully set mode to chat!"));
-                    }
 
+                    }
                     case "screen" -> {
                         type = "screen";
                         Player.alertClient(MessagePresets.trueTextPreset("Successfully set mode to screen!"));
                     }
-
                     default -> Player.alertClient(MessagePresets.falseTextPreset("Unknown mode! Modes are chat or screen!"));
                 }
             }
 
-            case "fixScreen" -> {
-                textScreen.clear();
-                textScreen.update();
-                textScreen.draw();
+            case "setcharacter" -> {
+                if (textScreen != null) {
+                    textScreen.character = arguments.get(1);
+                }
+                if (chatScreen != null) {
+                    chatScreen.character = arguments.get(1);
+                }
+
+                Player.alertClient(MessagePresets.trueTextPreset("Screenshare character overridden to " + arguments.get(1)));
             }
 
-            case "setDimensions" -> {
+            case "fixscreen" -> {
+                textScreen.cleanup();
+                textScreen.clear();
+                textScreen.update();
+            }
+
+            case "setdimensions" -> {
                 try {
                     width = Integer.parseInt(arguments.get(1));
                     height = Integer.parseInt(arguments.get(2));
@@ -85,7 +113,7 @@ public class ScreenShareCommand extends Command {
                 Player.alertClient(MessagePresets.trueTextPreset("Successfully set dimensions!"));
             }
 
-            case "setFps" -> {
+            case "setfps" -> {
                 try {
                     fps = Integer.parseInt(arguments.get(1));
                 } catch (NumberFormatException e) {
@@ -124,6 +152,7 @@ public class ScreenShareCommand extends Command {
                             }
 
                             textScreen.clear();
+                            textScreen.cleanup();
                             textScreen.update();
 
                             loop.scheduleAtFixedRate(new TimerTask() {
@@ -134,13 +163,11 @@ public class ScreenShareCommand extends Command {
                             },0, 1000 / fps);
                         }
                     }
-
-
                 }
             }
 
             case "stop" -> {
-                if(enabled) {
+                if (enabled) {
                     loop.purge();
                     loop.cancel();
 
@@ -152,21 +179,17 @@ public class ScreenShareCommand extends Command {
                     Player.alertClient(MessagePresets.falseTextPreset("No screen instance running!"));
                     return;
                 }
-
-
                 if(Objects.equals(type, "screen")) {
-                    for(String i : textScreen.tags) {
-                        CClient.commandCoreSystem.run("kill @e[tag=" + i + "]");
-                    }
+                    textScreen.cleanup();
                 }
             }
 
-            case "setSelector" -> {
+            case "setselector" -> {
                 chatScreen.selector = arguments.get(1);
-                Player.alertClient(MessagePresets.trueTextPreset("Selector set!"));
+                Player.alertClient(MessagePresets.trueTextPreset("Selector set to " + arguments.get(1)));
             }
 
-            case "compactMode" -> {
+            case "compactmode" -> {
                 if(compact) {
                     Player.alertClient(MessagePresets.falseTextPreset("Compact mode disabled!"));
                     compact = false;
@@ -194,7 +217,8 @@ public class ScreenShareCommand extends Command {
                 int green = (pixel >> 8) & 255;
                 int blue = pixel & 255;
 
-                screen.screen[x][y] = String.format("Format removed for the funnies", red, green, blue);
+                screen.screen[x][y] = String.format("#%s%s%s", Integer.toHexString(red), Integer.toHexString(green), Integer.toHexString(blue));
+                //I have unfunny your funnies
             }
         }
 

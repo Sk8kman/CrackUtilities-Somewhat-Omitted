@@ -1,5 +1,15 @@
 package org.e11eman.crackutilities.commands;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
+import org.e11eman.crackutilities.utilities.toolclasses.Command;
+import org.e11eman.crackutilities.wrappers.Player;
+
+import java.util.ArrayList;
+
 public class NukerCommand extends Command {
     public NukerCommand() {
         super("nuker", "Destroys blocks in funny way", "nuker <radius>");

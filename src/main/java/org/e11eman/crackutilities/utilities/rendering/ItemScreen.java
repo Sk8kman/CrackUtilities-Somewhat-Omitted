@@ -1,46 +1,32 @@
 package org.e11eman.crackutilities.utilities.rendering;
-public class ItemScreen extends Screen{
+
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.LoreComponent;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.*;
+import net.minecraft.util.Formatting;
+import org.e11eman.crackutilities.wrappers.Player;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+public class ItemScreen extends Screen {
     public ItemScreen(int width, int height, String character) {
         super(width, height, character);
     }
 
     @Override
     public void draw() {
-        JsonArray rawLore = new JsonArray();
         ItemStack item = Player.getPlayer().getInventory().getMainHandStack();
+        LoreComponent loreComponent = LoreComponent.DEFAULT;
 
-        NbtCompound nbt = item.getOrCreateNbt();
-        NbtCompound nbtDisplay = nbt.getCompound(ItemStack.DISPLAY_KEY);
-
-        NbtList nbtLore = new NbtList();
-
-        JsonObject disableItalics = new JsonObject();
-
-        disableItalics.add("text", new JsonPrimitive(""));
-        disableItalics.add("italic", new JsonPrimitive(false));
-
-        for(int y =0; y < height; y++) {
-            rawLore.add(disableItalics);
-
-            for(int x = 0; x < width; x++) {
-                JsonObject pixel = new JsonObject();
-
-                pixel.add("text", new JsonPrimitive(this.character));
-                pixel.add("color", new JsonPrimitive(screen[x][y]));
-
-                rawLore.add(pixel);
+        for (int y = 0; y < height; y++) {
+            MutableText line = MutableText.of(PlainTextContent.of(""));
+            for (int x = 0; x < width; x++) {
+                line.append(this.character).setStyle(Style.EMPTY.withColor(Integer.parseInt(screen[x][y].toUpperCase(), 16)).withItalic(false).withBold(false));
             }
-
-            nbtLore.add(NbtString.of(
-                    rawLore.toString()
-            ));
-
-            rawLore = new JsonArray();
+            loreComponent = loreComponent.with(Text.of(line));
         }
-
-        nbtDisplay.put(ItemStack.LORE_KEY, nbtLore);
-
-        JsonObject name = new JsonObject();
 
         LocalDate date = LocalDate.now();
         LocalTime time = LocalTime.now();
@@ -52,22 +38,17 @@ public class ItemScreen extends Screen{
         int minute = time.getMinute();
         int second = time.getSecond();
 
-        name.add("text", new JsonPrimitive(String.format("Created %s/%s/%s at %s:%s:%s",
+        MutableText name = MutableText.of(PlainTextContent.of(String.format("Created %s/%s/%s at %s:%s:%s",
                 day,
                 month,
                 year,
                 hour,
                 minute,
                 second
-                ))
-        );
+        ))).setStyle(Style.EMPTY.withColor(0x808080).withItalic(false).withBold(false));
 
-        name.add("color", new JsonPrimitive("#808080"));
-
-        nbtDisplay.put(ItemStack.NAME_KEY, NbtString.of(name.toString()));
-        nbt.put(ItemStack.DISPLAY_KEY, nbtDisplay);
-
-        item.setNbt(nbt);
+        item.set(DataComponentTypes.CUSTOM_NAME, name);
+        item.set(DataComponentTypes.LORE, loreComponent);
 
         Player.setMainHand(item);
     }

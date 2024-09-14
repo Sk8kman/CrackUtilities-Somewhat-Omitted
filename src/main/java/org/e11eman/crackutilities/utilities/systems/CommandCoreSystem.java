@@ -1,4 +1,25 @@
 package org.e11eman.crackutilities.utilities.systems;
+
+import com.google.gson.JsonObject;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.CommandBlockBlockEntity;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.network.packet.c2s.play.UpdateCommandBlockC2SPacket;
+import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.chunk.WorldChunk;
+import org.e11eman.crackutilities.utilities.CClient;
+import org.e11eman.crackutilities.utilities.MathExtras;
+import org.e11eman.crackutilities.utilities.MessagePresets;
+import org.e11eman.crackutilities.wrappers.Player;
+import org.joml.Vector3d;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.ArrayList;
+
 public class CommandCoreSystem {
     private final Vector3d core = new Vector3d(0, 0, 0);
     private final ArrayList<BlockPos> cantuseBlocks = new ArrayList<>();
@@ -79,7 +100,8 @@ public class CommandCoreSystem {
     public void fillCore() {
         JsonObject options = CClient.configSystem.getCategory(CClient.configSystem.getConfig(), "commandCoreSystem");
         if (!options.get("enabled").getAsBoolean()) return;
-        CClient.chatQueueSystem.addMessageToQueue("/fill " + Math.round(core.x) + " " + 0 + " " + Math.round(core.z) + " " + Math.round(core.x + 15) + " " + Math.round(options.get("layers").getAsDouble() - 1) + " " + Math.round(core.z + 15) + " command_block{CustomName:'[{\"text\":\"CrackUtilitiesCore\",\"bold\":true,\"color\":\"blue\"}]'} replace");
+        //CClient.chatQueueSystem.addMessageToQueue("/fill " + Math.round(core.x) + " " + 0 + " " + Math.round(core.z) + " " + Math.round(core.x + 15) + " " + Math.round(options.get("layers").getAsDouble() - 1) + " " + Math.round(core.z + 15) + " repeating_command_block");
+        MinecraftClient.getInstance().getNetworkHandler().sendCommand("fill " + Math.round(core.x) + " " + 0 + " " + Math.round(core.z) + " " + Math.round(core.x + 15) + " " + Math.round(options.get("layers").getAsDouble() - 1) + " " + Math.round(core.z + 15) + " repeating_command_block{CustomName:'[{\"text\":\"CrackUtilitiesCore\",\"bold\":true,\"color\":\"blue\"}]'}");
     }
 
     public void run(String command) {

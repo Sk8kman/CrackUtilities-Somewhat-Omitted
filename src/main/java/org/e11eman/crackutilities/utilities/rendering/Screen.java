@@ -5,26 +5,24 @@ public abstract class Screen {
     public String[][] screen;
     public int width;
     public int height;
-    public String character = "OMITTED";
-
+    public String character = "█"; //haha unomitted
 
     public Screen(int width, int height, String character) {
         screen = new String[width][height];
 
         this.width = width;
         this.height = height;
-        if(character != null) {
-            this.character = "character";
+        if (character == null || character.isBlank()) {
+            this.character = "█";
         }
-
         clear();
     }
 
     abstract public void draw();
 
     public void clear() {
-        for(int y =0; y < height; y++) {
-            for(int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
                 screen[x][y] = "#FFFFFF";
             }
         }

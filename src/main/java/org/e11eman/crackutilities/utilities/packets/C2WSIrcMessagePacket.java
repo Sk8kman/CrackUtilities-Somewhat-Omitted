@@ -1,4 +1,8 @@
 package org.e11eman.crackutilities.utilities.packets;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
 public class C2WSIrcMessagePacket {
     private final JsonObject packet = new JsonObject();
 
@@ -7,7 +11,7 @@ public class C2WSIrcMessagePacket {
 
         senderData.add("origin", new JsonPrimitive(origin));
 
-        if(genAvatar) {
+        if (genAvatar) {
             senderData.add("avatar", new JsonPrimitive("URL OMITTED" + username + ".png"));
         } else {
             senderData.add("avatar", new JsonPrimitive("URL OMITTED"+ ".png"));

@@ -1,5 +1,18 @@
 package org.e11eman.crackutilities.utilities;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
+import org.e11eman.crackutilities.utilities.systems.*;
+import org.e11eman.crackutilities.wrappers.Player;
+
+import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @SuppressWarnings("unused")
 public class CClient {
     public static EventSystem events = new EventSystem();
@@ -12,8 +25,9 @@ public class CClient {
     public static IrcSystem ircSystem;
     public static KeybindingSystem keybindingSystem;
 
+
     public static void initSystems() {
-        configSystem = new ConfigSystem(new File(FabricLoader.getInstance().getConfigDir() + "DirectoryOmitted"));
+        configSystem = new ConfigSystem(new File(FabricLoader.getInstance().getConfigDir() + "/CrackUtilities"));
 
         new ChatSystem();
         new SelfCareSystem();
@@ -31,7 +45,7 @@ public class CClient {
                 events.invoke("EVENTOMITTED", handler, sender, client);
 
                 Player.inWorld = true;
-    });
+        });
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             events.invoke("EVENTOMITTED", handler, client);

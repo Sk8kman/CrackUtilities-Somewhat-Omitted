@@ -1,4 +1,11 @@
 package org.e11eman.crackutilities.utilities.systems;
+
+import org.e11eman.crackutilities.utilities.CClient;
+
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class CloopSystem {
     public ArrayList<Timer> loops = new ArrayList<>();
 

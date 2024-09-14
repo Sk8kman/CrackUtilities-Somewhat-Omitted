@@ -1,4 +1,9 @@
 package org.e11eman.crackutilities.utilities.systems;
+
+import org.e11eman.crackutilities.utilities.VarargsConsumer;
+
+import java.util.HashMap;
+
 @SuppressWarnings("unused")
 public class EventSystem {
     private final HashMap<String, HashMap<String, VarargsConsumer<Object>>> events = new HashMap<>();

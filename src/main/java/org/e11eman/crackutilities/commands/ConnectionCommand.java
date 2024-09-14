@@ -1,5 +1,11 @@
 package org.e11eman.crackutilities.commands;
 
+import net.minecraft.client.network.ServerInfo;
+import org.e11eman.crackutilities.utilities.toolclasses.Command;
+import org.e11eman.crackutilities.wrappers.Player;
+
+import java.util.ArrayList;
+
 public class ConnectionCommand extends Command {
 
     public ConnectionCommand() {
@@ -15,7 +21,7 @@ public class ConnectionCommand extends Command {
 
             case "swapsrv" -> {
                 Player.disconnectPlayer();
-                Player.connectPlayer(arguments.get(1), new ServerInfo("newServer", arguments.get(1), false));
+                Player.connectPlayer(arguments.get(1), new ServerInfo("newServer", arguments.get(1), ServerInfo.ServerType.OTHER));
             }
         }
     }
